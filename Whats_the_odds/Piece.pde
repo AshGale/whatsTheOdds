@@ -1,6 +1,6 @@
 
 
-class Item {
+class Piece {
   int positionX, positionY;
   int player;
 
@@ -9,11 +9,12 @@ class Item {
   boolean unit = false;
   boolean attacker = false;
 
-  Item() {
+  Piece() {
 
   }
 
-  Item (int player, int x, int y, int value, boolean building ) {
+  Piece (int player, int x, int y, int value, boolean building ) {
+    //    println(player + " " + x + " " + y + " " + value + " " + building);
     this.player = player;
     this.positionX = x;
     this.positionY = y;
@@ -25,7 +26,12 @@ class Item {
     return this.value;
   }
 
+  int getPositionX () {
+    return this.positionX;
+  }
+
 }
+
 
 
 

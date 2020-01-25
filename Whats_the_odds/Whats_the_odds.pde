@@ -3,20 +3,24 @@ int tileSize = 50;// min 30 when tile ammount is 10
 int tileAmmount = 10; // keep even, otherwise checkerboard will be lines
 int boardSize = tileSize * tileAmmount;
 int messageBoxHeight = 50;
+color playerOneColor = color(0, 0, 200);
+color playerTwoColor = color(0, 200, 200);
+color playerThreeColor = color(200, 0, 200);
+color playerFourColor = color(200, 200, 200);
 
 //message box and ui padding variables
 int padding = 10;
 
-//player variables
+//helper variables
 boolean running = true;
+int numberOfPlayers = 4;
 int playerTurn = 1;
-int playerMoves = 1;
-int roled = 0;
 int selectedX = 0;
 int selectedY = 0;
 
 //board variables
 Tile[][] grid;
+Player[] players;
 
 void setup() {
   frameRate(30);
@@ -25,7 +29,7 @@ void setup() {
 
   //init variables
   initGrid();
-  initPlayers(1);
+  initPlayers();
 
   println("setup");        
 }
@@ -61,17 +65,23 @@ void updateTextOut(){
   rect(0, boardSize, boardSize, messageBoxHeight);
   textAlign(TOP, LEFT);
   printText("Player turn: " + playerTurn, true, true);
-  printText("roled: " + roled, true, false);
+  printText("roled: " + players[playerTurn].roled, true, false);
   printText("Game running: " + running, false, true);
-  printText("Moves left: " + playerMoves, false, false);
+  printText("Moves left: " +  players[playerTurn].playerMoves, false, false);
 
 }
 
 //INIT METHODS
 
-void initPlayers(int players) {
+void initPlayers() {
 
-  for (int i = 1; i <= players; i++ ) {
+  //note the index starting at 0
+  players = new Player[numberOfPlayers];
+
+  for (int i = 0; i < numberOfPlayers; i++ ) {
+
+    Player player = new Player(i);
+    players[i] = player;
 
     //determine starting position not on edge tiles (1, tileAmmount-2)
     int px = (int)random(1, tileAmmount-2);
@@ -79,10 +89,10 @@ void initPlayers(int players) {
 
     //need to check surounding tiles, ie selected and one around is not taken
 
-    Item item = new Item(i, px, py, 12, true);//create new player base
+    Piece piece = new Piece(i, px, py, 12, true);//create new player base
 
-      grid[px][py].setItem(item);
-    println("player " + i + " starting position: " + px + " " + py);
+      grid[px][py].setPiece(piece);
+    println("player " + i+1 + " starting position: " + px + " " + py);
   }
 
 }
@@ -190,6 +200,7 @@ void mouseClicked() {
     // println("off board");
   }
 }
+
 
 
 

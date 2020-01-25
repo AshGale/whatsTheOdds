@@ -7,25 +7,25 @@ class Tile {
   boolean selected = false;
   int r,g,b;
 
-  Item item;
+  Piece piece;
 
   Tile (int x, int y) {
     this.positionX = x;
     this.positionY = y;
   }
 
-  void setItem(Item item) {
+  void setPiece(Piece piece) {
     this.empty = false;
-    this.item = item;
+    this.piece = piece;
   }
 
-  void removeItem() {
+  void removePiece() {
     this.empty = true;
-    this.item = null;
+    this.piece = null;
   }
 
-  Item getItem(){
-    return this.item;
+  Piece getPiece(){
+    return this.piece;
   }
 
   void deselected () {
@@ -56,15 +56,16 @@ class Tile {
     if(empty) {
     } 
     else {
-      // draw the item too
-      fill(0,255,0);
+      // draw the piece too
+      fill(players[this.piece.player].playerColor);
       int centerX = positionX*tileSize+tileSize/2;
       int centerY = positionY*tileSize+tileSize/2;
       ellipse(centerX, centerY, tileSize, tileSize);
+      // value of the piece
       textFont(createFont("Arial",tileSize,true),tileSize/2);
       fill(0); // black text
       textAlign(CENTER, CENTER);
-      text(item.getValue(), centerX, centerY);
+      text(piece.getValue(), centerX, centerY);
       textAlign(TOP, LEFT);
     }
   }
