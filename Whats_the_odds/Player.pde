@@ -3,11 +3,10 @@
 class Player {
 
   int playerId;
-  int playerMoves = 1;
+  int playerMoves = 0;
   int roled = 0; 
   int power = 0;
   color playerColor; 
-
 
   Player (int playerId) {
     this.playerId = playerId;
@@ -25,10 +24,5 @@ class Player {
     }
     //    println(playerId  + " " + playerColor);
   }
-
-  color getPlayerColor() {
-    return this.playerColor; 
-  }
-
 }
 
