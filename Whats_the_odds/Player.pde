@@ -1,7 +1,7 @@
 
 
 class Player {
-
+  int alive = true;
   int playerId;
   int playerMoves = 0;
   int roled = 0; 

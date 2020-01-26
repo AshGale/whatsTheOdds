@@ -27,7 +27,7 @@ int padding = 10;
 //helper variables
 boolean update = true;
 int numberOfPlayers = 2;
-int playerTurn = 0;
+int playerTurn = numberOfPlayers-1;
 int selectedX = 0;
 int selectedY = 0;
 boolean selectedATile = false;
@@ -52,6 +52,8 @@ void draw() {
   if (update) {
     background(255);
 
+    isTurnOwver();
+
     //dray messages output
     updateTextOut();//when theer is a update
 
@@ -65,6 +67,23 @@ void draw() {
 
 //UPDATE METHODS
 
+void isTurnOwver() {
+  if(players[playerTurn].playerMoves <= 0) {
+    //next players turn
+    selectedATile = false;
+    grid[selectedX][selectedY].deselected();
+
+    playerTurn++;
+    if(playerTurn == numberOfPlayers) {
+      playerTurn = 0;
+    }
+    players[playerTurn].roled = roleDice();
+    int income = getPlayerPlayerIncome();
+    players[playerTurn].playerMoves = players[playerTurn].roled + income;
+
+  }
+}
+
 void updateBoard() {
   for (int i = 0; i < tileAmmount; i++ ) {
     for (int k = 0; k < tileAmmount; k++ ) {
@@ -77,13 +96,13 @@ void updateTextOut(){
   //String tl, String tr, String bl, String br
 
   //clear last text
-  fill(212,212,212);//light gey
+  fill(players[playerTurn].playerColor);//light gey
   rect(0, boardSize, boardSize, messageBoxHeight);
   textAlign(TOP, LEFT);
   printText("Player turn: " + (playerTurn+1), true, true);
-  printText("roled: " + players[playerTurn].roled, true, false);
+  printText("Moves left: " +  players[playerTurn].playerMoves, true, false);
   printText("Number of Players: " + numberOfPlayers, false, true);
-  printText("Moves left: " +  players[playerTurn].playerMoves, false, false);
+  printText("roled: " + players[playerTurn].roled, false, false);
 
 }
 
@@ -148,6 +167,39 @@ int roleDice() {
   return (int)random(1,6);
 }
 
+int getPlayerPlayerIncome() {
+  //loops through the grid and gets all the pieces that have a odd number for that player
+  Piece piece;
+  int income = 0;
+  //if a odd piece for the player is found, role the dice, and if value is value or lass, +1 income
+  for (int i = 0; i < tileAmmount; i++ ) {
+    for (int k = 0; k < tileAmmount; k++ ) {
+      if(grid[i][k].empty){
+
+      } 
+      else {
+        piece = grid[i][k].piece;
+        if (piece.playerId == playerTurn) {
+          if(piece.building){
+            income++;
+          } 
+          else {
+            if(piece.value%2 == 1) {//if odd number
+              if(roleDice() <= piece.value) {
+                income++;
+              } 
+              else {
+                //println("player" + (playerTurn+1) + " lost out on income!");
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return income;
+}
+
 void printText(String message, boolean top, boolean left) {
   textFont(createFont("Arial",12,true),12);
   fill(0); // black text
@@ -189,27 +241,27 @@ void keyPressed()
 
   if (key == CODED) {
     if (keyCode == UP) {
-      println("up");
+      //      println("up");
       if (selectedATile) {
-       inputDirectionAction(0, -1); //
+        inputDirectionAction(0, -1); //
       }
     } 
     else if (keyCode == DOWN) {
-      println("down");
+      //      println("down");
       if (selectedATile) {
-       inputDirectionAction(0, 1); //
+        inputDirectionAction(0, 1); //
       }
     } 
     else if (keyCode == LEFT) {
-      println("left");
+      //      println("left");
       if (selectedATile) {
-       inputDirectionAction(-1, 0); //
+        inputDirectionAction(-1, 0); //
       }
     } 
     else if (keyCode == RIGHT) {
-      println("right");
+      //      println("right");
       if (selectedATile) {
-       inputDirectionAction(1, 0); //
+        inputDirectionAction(1, 0); //
       }
     } 
     else {
@@ -247,6 +299,10 @@ void mouseClicked() {
     // println("off board");
   }
 }
+
+
+
+
 
 
 

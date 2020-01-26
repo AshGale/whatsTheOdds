@@ -53,9 +53,24 @@ class Tile {
       fill(players[this.piece.playerId].playerColor);
       int centerX = positionX * tileSize + tileSize / 2;
       int centerY = positionY * tileSize + tileSize / 2;
-      ellipse(centerX, centerY, tileSize, tileSize);
+      if(this.piece.building){
+        rectMode(CENTER);
+        rect(centerX, centerY, tileSize-padding, tileSize-padding);
+        rectMode(CORNER);
+      } 
+      else {
+        // unit
+        if(this.piece.value%2 == 0){
+          //attacker          	
+          triangle(centerX-tileSize/2, centerY+tileSize/2, centerX, centerY-tileSize/2, centerX+tileSize/2, centerY+tileSize/2);
+        } 
+        else {
+          ellipse(centerX, centerY, tileSize, tileSize);
+        }
+      }
+
       // value of the piece
-      textFont(createFont("Arial",tileSize,true),tileSize/2);
+      textFont(createFont("Arial",tileSize,true), tileSize/2);
       fill(0); // black text
       textAlign(CENTER, CENTER);
       text(piece.value, centerX, centerY);
@@ -63,6 +78,7 @@ class Tile {
     }
   }
 }
+
 
 
 
