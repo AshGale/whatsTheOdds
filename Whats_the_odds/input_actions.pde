@@ -1,4 +1,12 @@
 
+void nextPlayersTurn() {
+  players[playerTurn].roled = roleDice();
+  int income = getPlayerPlayerIncome();
+  players[playerTurn].playerMoves = players[playerTurn].roled + income;
+  startTurn = false;
+  update();
+}
+
 void inputDirectionAction (int ofsetX, int ofsetY) {
   Piece piece = grid[selectedX][selectedY].piece;
 
@@ -135,9 +143,9 @@ boolean movePiece(int a, int b, int x, int y) {
                 return true;
               } 
               else if (tileTo.piece.value == 6) {
-                tileTo.selected();
-                tileFrom.deselected();
-                update();
+//                tileTo.selected();
+//                tileFrom.deselected();
+//                update();
                 return false;
               } 
               else {                

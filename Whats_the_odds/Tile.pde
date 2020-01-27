@@ -51,9 +51,9 @@ class Tile {
       }
     }
     //if only 1 piece, then it's that last
-    println("pieces "+playerPiecesCount);
+    println("player" + (piece.playerId+1) + " pieces = " + playerPiecesCount);
     if (playerPiecesCount == 1) {
-      println("removing las piece for player" + piece.playerId);
+      println("removing las piece for player" + (piece.playerId+1));
       players[this.piece.playerId].playerMoves = 0;
       players[this.piece.playerId].alive = false;
       this.empty = true;

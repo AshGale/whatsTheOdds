@@ -1,4 +1,0 @@
-#!/bin/sh
-
-APPDIR=$(dirname "$0")
-java  -Djava.library.path="$APPDIR" -cp "$APPDIR/lib/Whats_the_odds.jar:$APPDIR/lib/core.jar" Whats_the_odds

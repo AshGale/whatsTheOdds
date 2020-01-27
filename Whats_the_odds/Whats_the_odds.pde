@@ -12,17 +12,17 @@
 //player turn ends when they have no moves
 
 //overide variables
-int tileSize = 50;// min 30 when tile ammount is 10
+int tileSize = 80;// min 30 when tile ammount is 10
 int tileAmmount = 10; // keep even, otherwise checkerboard will be lines
 int boardSize = tileSize * tileAmmount;
-int messageBoxHeight = 50;
+int messageBoxHeight = 70;
 color playerOneColor = color(0, 0, 255);
 color playerTwoColor = color(255, 128, 0);
 color playerThreeColor = color(0, 255, 0);
 color playerFourColor = color(255, 0, 255);
 
 //message box and ui padding variables
-int padding = 10;
+int padding = 15;
 
 //helper variables
 boolean update = true;
@@ -31,6 +31,7 @@ int playerTurn = numberOfPlayers-1;
 int selectedX = 0;
 int selectedY = 0;
 boolean selectedATile = false;
+boolean startTurn = true;
 
 //board variables
 Tile[][] grid;
@@ -45,7 +46,8 @@ void setup() {
   initGrid();
   initPlayers();
 
-  println("setup compleate");        
+  println("setup compleate");
+  println("fix bug with player turn not finishing");  
 }
 
 void draw() {
@@ -83,15 +85,13 @@ void isTurnOwver() {
 
     //if current palyer no alive, return
     if(!players[playerTurn].alive) {
-      println("player " + playerTurn + " not alive");
+      println("player " + (playerTurn+1) + " not alive");
       update();
       isTurnOwver();
     } 
     else {
       //calculate moves
-      players[playerTurn].roled = roleDice();
-      int income = getPlayerPlayerIncome();
-      players[playerTurn].playerMoves = players[playerTurn].roled + income;
+      startTurn = true;
     }
 
   }
@@ -109,14 +109,24 @@ void updateTextOut(){
   //String tl, String tr, String bl, String br
 
   //clear last text
-  fill(players[playerTurn].playerColor);//light gey
+  fill(players[playerTurn].playerColor);
   rect(0, boardSize, boardSize, messageBoxHeight);
   textAlign(TOP, LEFT);
-  printText("Player turn: " + (playerTurn+1), true, true);
-  printText("Moves left: " +  players[playerTurn].playerMoves, true, false);
-  printText("Number of Players: " + numberOfPlayers, false, true);
-  printText("roled: " + players[playerTurn].roled, false, false);
 
+  printText("Player turn: " + (playerTurn+1), true, true);
+  printText("Number of Players: " + numberOfPlayers, false, true);
+
+  if(startTurn) {
+    //startTurn Button
+    fill(color(128,128,128));
+    rect(boardSize/2, boardSize, boardSize/2, messageBoxHeight/2);
+    fill(0);
+    text(" CLICK TO ROLE DICE!", boardSize/2 , boardSize + padding*2);
+  } 
+  else {
+    printText("Moves left: " +  players[playerTurn].playerMoves, true, false);
+    printText("roled: " + players[playerTurn].roled, false, false);
+  }
 }
 
 //INIT METHODS
@@ -166,7 +176,9 @@ void initGrid() {
       grid[i][k] = tile;
       black = !black;
     }
-    black = !black;//correct for last colour being the colour needed
+    if(tileAmmount%2 ==0) {
+      black = !black;//correct for last colour being the colour needed
+    }
   }
 }
 
@@ -214,7 +226,7 @@ int getPlayerPlayerIncome() {
 }
 
 void printText(String message, boolean top, boolean left) {
-  textFont(createFont("Arial",12,true),12);
+  textFont(createFont("Arial",18,true),18);
   fill(0); // black text
 
   // 4 positions for text, determine where to show text
@@ -225,7 +237,7 @@ void printText(String message, boolean top, boolean left) {
     } 
     else {
       //top right
-      text(message, boardSize/2 - padding, boardSize + padding*2);
+      text(message, boardSize/2, boardSize + padding*2);
     }
   } 
   else {
@@ -235,7 +247,7 @@ void printText(String message, boolean top, boolean left) {
     } 
     else {
       //bottom right
-      text(message, boardSize/2 - padding, boardSize + messageBoxHeight - padding);
+      text(message, boardSize/2, boardSize + messageBoxHeight - padding);
     }
   }
 }
@@ -278,9 +290,27 @@ void keyPressed()
         if (selectedATile) {
           inputDirectionAction(1, 0); //
         }
+      }
+      else if (keyCode == 16) { //shift
+        Piece selectedPiece;
+        for (int i = selectedX; i < tileAmmount; i++ ) {
+          for (int k = selectedY; k < tileAmmount; k++ ) {
+            if(grid[i][k].empty){
+
+            } 
+            else {
+              print("here fix cycle player pices")
+              selectedPiece = grid[i][k].piece;
+              if (selectedPiece.playerId == playerTurn) {         
+                selectedX = i;
+                selectedY = k;
+              }
+            }
+          }
+        }
       } 
       else {
-        //println("keyCode pressed: " + keyCode);
+        println("keyCode pressed: " + keyCode);
       }
     }
   }
@@ -288,33 +318,47 @@ void keyPressed()
 
 void mouseClicked() {
   //  println(mouseX + "," + mouseY);
+
   if(mouseX < boardSize && mouseY < boardSize) {
     //    println("clicked on board");
     //    println("selected tile: " + mouseX/tileSize + " " + mouseY/tileSize); 
-    int x = mouseX/tileSize;
-    int y = mouseY/tileSize;
 
-    //own piece ? ie piece player id == current player id
-    if(grid[x][y].piece != null && grid[x][y].piece.playerId == playerTurn) {
-      grid[selectedX][selectedY].deselected();
-      selectedX = x;
-      selectedY = y;
-      grid[x][y].selected();
+    if(startTurn == false) {
+      int x = mouseX/tileSize;
+      int y = mouseY/tileSize;
 
-      selectedATile = true;
-      update(); // show selected tile
-    } 
-    else {
-      //nothing
-      //      selectedATile = false;
-      //      grid[selectedX][selectedY].deselected();
-      //      update(); // show selected tile
+      //own piece ? ie piece player id == current player id
+      if(grid[x][y].piece != null && grid[x][y].piece.playerId == playerTurn) {
+        grid[selectedX][selectedY].deselected();
+        selectedX = x;
+        selectedY = y;
+        grid[x][y].selected();
+
+        selectedATile = true;
+        update(); // show selected tile
+      } 
+      else {
+        //nothing
+        //      selectedATile = false;
+        //      grid[selectedX][selectedY].deselected();
+        //      update(); // show selected tile
+      }
     }
   } 
   else {
     // println("off board");
+    if(startTurn) {
+      if(mouseX > boardSize/2 && mouseX < boardSize
+        && mouseY > boardSize && mouseY < boardSize + messageBoxHeight/2) {
+        nextPlayersTurn(); 
+      }
+    }
   }
 }
+
+
+
+
 
 
 
